@@ -1,61 +1,444 @@
 <!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Power Cloud php application</title>
-</head>
-<body>
-    <h1>Power Cloud</h1>
-    <h2>AWS-6</h2>
-    <h3>Create and Fetch Tables</h3>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Power Cloud PHP Application</title>
 
-    <h2>Create Table</h2>
-    <form id="createTableForm">
-        <label for="tableName">Table Name:</label>
-        <input type="text" id="tableName" required>
-        <button type="submit">Create Table</button>
-    </form>
+    <style>
+      :root {
+        --bg: #0b1220;
+        --card: rgba(255, 255, 255, 0.08);
+        --card-border: rgba(255, 255, 255, 0.14);
+        --text: #e8eefc;
+        --muted: rgba(232, 238, 252, 0.72);
+        --primary: #6aa5ff;
+        --primary-2: #9b8cff;
+        --danger: #ff6a7a;
+        --shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+        --radius: 18px;
+      }
 
-    <h3>Fetch Table Names</h3>
-    <button id="fetchTableNamesBtn">Fetch Table Names</button>
-    <ul id="tableNamesList"></ul>
+      * {
+        box-sizing: border-box;
+      }
 
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial,
+          "Noto Sans", "Liberation Sans", sans-serif;
+        color: var(--text);
+        background: radial-gradient(
+            1200px 700px at 20% 10%,
+            rgba(106, 165, 255, 0.35),
+            transparent 60%
+          ),
+          radial-gradient(
+            900px 600px at 80% 40%,
+            rgba(155, 140, 255, 0.32),
+            transparent 55%
+          ),
+          radial-gradient(
+            900px 700px at 30% 90%,
+            rgba(0, 255, 209, 0.14),
+            transparent 60%
+          ),
+          var(--bg);
+        display: grid;
+        place-items: center;
+        padding: 28px 16px;
+      }
+
+      .app {
+        width: min(980px, 100%);
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.10),
+          rgba(255, 255, 255, 0.05)
+        );
+        border: 1px solid var(--card-border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+
+      header {
+        padding: 26px 26px 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+        display: flex;
+        gap: 18px;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+      }
+
+      .brand {
+        display: grid;
+        gap: 6px;
+      }
+
+      .brand h1 {
+        margin: 0;
+        font-size: clamp(22px, 2.6vw, 30px);
+        letter-spacing: 0.2px;
+      }
+
+      .brand p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.35;
+      }
+
+      .pill {
+        padding: 7px 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.10);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      main {
+        padding: 22px 26px 28px;
+        display: grid;
+        gap: 18px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 16px;
+      }
+
+      .card {
+        grid-column: span 12;
+        background: var(--card);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: var(--radius);
+        padding: 18px;
+        display: grid;
+        gap: 12px;
+      }
+
+      @media (min-width: 860px) {
+        .card.split {
+          grid-column: span 6;
+        }
+      }
+
+      h2 {
+        margin: 0;
+        font-size: 18px;
+      }
+
+      .muted {
+        color: var(--muted);
+        font-size: 14px;
+        margin: 0;
+        line-height: 1.4;
+      }
+
+      form {
+        display: grid;
+        gap: 10px;
+      }
+
+      label {
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      .row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      input[type="text"] {
+        flex: 1 1 220px;
+        padding: 12px 12px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        background: rgba(0, 0, 0, 0.25);
+        color: var(--text);
+        outline: none;
+      }
+
+      input[type="text"]::placeholder {
+        color: rgba(232, 238, 252, 0.45);
+      }
+
+      input[type="text"]:focus {
+        border-color: rgba(106, 165, 255, 0.65);
+        box-shadow: 0 0 0 4px rgba(106, 165, 255, 0.20);
+      }
+
+      button {
+        appearance: none;
+        border: 0;
+        cursor: pointer;
+        padding: 12px 14px;
+        border-radius: 12px;
+        color: #07101f;
+        background: linear-gradient(135deg, var(--primary), var(--primary-2));
+        font-weight: 650;
+      }
+
+      button.secondary {
+        background: rgba(255, 255, 255, 0.10);
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        color: var(--text);
+        font-weight: 600;
+      }
+
+      button:disabled {
+        opacity: 0.65;
+        cursor: not-allowed;
+      }
+
+      .status {
+        border-radius: 12px;
+        padding: 10px 12px;
+        background: rgba(0, 0, 0, 0.20);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        font-size: 14px;
+        color: var(--muted);
+        min-height: 42px;
+        display: flex;
+        align-items: center;
+      }
+
+      .status.ok {
+        border-color: rgba(0, 255, 209, 0.25);
+        color: rgba(232, 238, 252, 0.86);
+      }
+
+      .status.err {
+        border-color: rgba(255, 106, 122, 0.35);
+        color: rgba(232, 238, 252, 0.86);
+      }
+
+      ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        display: grid;
+        gap: 8px;
+      }
+
+      li {
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(0, 0, 0, 0.18);
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .tag {
+        font-size: 12px;
+        color: rgba(232, 238, 252, 0.6);
+      }
+
+      footer {
+        padding: 18px 26px 22px;
+        border-top: 1px solid rgba(255, 255, 255, 0.10);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+      }
+
+      a.link {
+        color: var(--text);
+        text-decoration: none;
+        border-bottom: 1px dashed rgba(232, 238, 252, 0.45);
+      }
+
+      a.link:hover {
+        border-bottom-color: rgba(232, 238, 252, 0.85);
+      }
+
+      .small {
+        font-size: 13px;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <header>
+        <div class="brand">
+          <h1>Power Cloud</h1>
+          <p>
+            AWS RDS + PHP demo to <strong>create tables</strong> and
+            <strong>fetch table names</strong>.
+          </p>
+        </div>
+        <span class="pill">AWS-6 • RDS / MySQL • PHP</span>
+      </header>
+
+      <main>
+        <div class="grid">
+          <section class="card split" aria-labelledby="create-table-title">
+            <h2 id="create-table-title">Create table</h2>
+            <p class="muted">
+              Enter a table name and click <em>Create</em>. (Example:
+              <code>users</code>)
+            </p>
+
+            <form id="createTableForm">
+              <label for="tableName">Table name</label>
+              <div class="row">
+                <input
+                  type="text"
+                  id="tableName"
+                  placeholder="e.g. users"
+                  required
+                  autocomplete="off"
+                />
+                <button id="createBtn" type="submit">Create</button>
+              </div>
+              <div id="createStatus" class="status" role="status" aria-live="polite">
+                Ready.
+              </div>
+            </form>
+          </section>
+
+          <section class="card split" aria-labelledby="fetch-table-title">
+            <h2 id="fetch-table-title">Fetch table names</h2>
+            <p class="muted">
+              Click <em>Fetch</em> to load the list of tables from your database.
+            </p>
+
+            <div class="row">
+              <button id="fetchTableNamesBtn" class="secondary" type="button">
+                Fetch
+              </button>
+              <div id="fetchStatus" class="status" role="status" aria-live="polite">
+                Not fetched yet.
+              </div>
+            </div>
+
+            <ul id="tableNamesList" aria-label="Table names"></ul>
+          </section>
+        </div>
+      </main>
+
+      <footer>
+        <div>
+          <div class="small">If you enjoy the content, consider subscribing:</div>
+          <a
+            class="link"
+            href="https://www.youtube.com/@PowerCloud-cn6yg"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            YouTube: @PowerCloud-cn6yg
+          </a>
+        </div>
+        <a
+          href="https://www.youtube.com/@PowerCloud-cn6yg"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <button type="button">Subscribe</button>
+        </a>
+      </footer>
+    </div>
 
     <script>
-        const createTableForm = document.getElementById('createTableForm');
-        const fetchTableNamesBtn = document.getElementById('fetchTableNamesBtn');
-        const tableNamesList = document.getElementById('tableNamesList');
+      const createTableForm = document.getElementById("createTableForm");
+      const fetchTableNamesBtn = document.getElementById("fetchTableNamesBtn");
+      const tableNamesList = document.getElementById("tableNamesList");
+      const createStatus = document.getElementById("createStatus");
+      const fetchStatus = document.getElementById("fetchStatus");
+      const createBtn = document.getElementById("createBtn");
 
-        // Event listener for creating a table
-        createTableForm.addEventListener('submit', function(event) {
-            event.preventDefault();
-            const tableName = document.getElementById('tableName').value;
-            
-            // Call PHP script to create table
-            fetch(`create_table.php?name=${tableName}`)
-                .then(response => response.text())
-                .then(message => alert(message))
-                .catch(error => console.error('Error creating table:', error));
-        });
+      function setStatus(el, text, type) {
+        el.textContent = text;
+        el.classList.remove("ok", "err");
+        if (type) el.classList.add(type);
+      }
 
-        // Event listener for fetching table names
-        fetchTableNamesBtn.addEventListener('click', function() {
-            // Call PHP script to fetch table names
-            fetch('fetch_table_names.php')
-                .then(response => response.json())
-                .then(tableNames => {
-                    tableNamesList.innerHTML = ''; // Clear existing list
+      function safeTableName(name) {
+        // Basic client-side guard. Server MUST still validate.
+        // Allows letters, numbers, and underscores; must start with a letter/underscore.
+        return /^[A-Za-z_][A-Za-z0-9_]*$/.test(name);
+      }
 
-                    tableNames.forEach(tableName => {
-                        const listItem = document.createElement('li');
-                        listItem.textContent = tableName;
-                        tableNamesList.appendChild(listItem);
-                    });
-                })
-                .catch(error => console.error('Error fetching table names:', error));
-        });
+      // Create table
+      createTableForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const tableName = document.getElementById("tableName").value.trim();
+
+        if (!safeTableName(tableName)) {
+          setStatus(
+            createStatus,
+            "Invalid table name. Use letters, numbers, underscores (no spaces).",
+            "err"
+          );
+          return;
+        }
+
+        createBtn.disabled = true;
+        setStatus(createStatus, "Creating table…");
+
+        try {
+          const res = await fetch(
+            `create_table.php?name=${encodeURIComponent(tableName)}`
+          );
+          const message = await res.text();
+          setStatus(createStatus, message || "Done.", res.ok ? "ok" : "err");
+        } catch (error) {
+          console.error("Error creating table:", error);
+          setStatus(createStatus, "Network error while creating table.", "err");
+        } finally {
+          createBtn.disabled = false;
+        }
+      });
+
+      // Fetch table names
+      fetchTableNamesBtn.addEventListener("click", async () => {
+        fetchTableNamesBtn.disabled = true;
+        setStatus(fetchStatus, "Fetching…");
+        tableNamesList.innerHTML = "";
+
+        try {
+          const res = await fetch("fetch_table_names.php");
+          const tableNames = await res.json();
+
+          if (!Array.isArray(tableNames) || tableNames.length === 0) {
+            setStatus(fetchStatus, "No tables found.", "ok");
+            return;
+          }
+
+          setStatus(fetchStatus, `Found ${tableNames.length} table(s).`, "ok");
+
+          tableNames.forEach((tableName, idx) => {
+            const li = document.createElement("li");
+            li.textContent = tableName;
+
+            const tag = document.createElement("span");
+            tag.className = "tag";
+            tag.textContent = `#${idx + 1}`;
+            li.appendChild(tag);
+
+            tableNamesList.appendChild(li);
+          });
+        } catch (error) {
+          console.error("Error fetching table names:", error);
+          setStatus(fetchStatus, "Failed to fetch table names.", "err");
+        } finally {
+          fetchTableNamesBtn.disabled = false;
+        }
+      });
     </script>
-</body>
+  </body>
 </html>
