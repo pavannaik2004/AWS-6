@@ -1,7 +1,7 @@
 <?php
-$servername = "mydb.cfquy20yagzu.ap-southeast-1.rds.amazonaws.com";
+$servername = "database-1.c5yimwcqgy8n.eu-north-1.rds.amazonaws.com";
 $username = "admin";
-$password = "jyotiranjan";
+$password = "adminadmin";
 $dbname = "mydbb";
 
 $tableName = $_GET['name'];
