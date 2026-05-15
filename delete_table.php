@@ -25,7 +25,8 @@ try {
     $sql = "DROP TABLE IF EXISTS `$safeTableName`";
     $conn->exec($sql);
 
-    echo "Table $tableName deleted successfully";
+    $safeOutput = htmlspecialchars($tableName, ENT_QUOTES, 'UTF-8');
+    echo "Table $safeOutput deleted successfully";
 } catch (PDOException $e) {
     http_response_code(500);
     echo "Error deleting table: " . $e->getMessage();

@@ -27,7 +27,9 @@ try {
     $sql = "RENAME TABLE `$safeOldName` TO `$safeNewName`";
     $conn->exec($sql);
 
-    echo "Table $oldName renamed to $newName successfully";
+    $safeOldOutput = htmlspecialchars($oldName, ENT_QUOTES, 'UTF-8');
+    $safeNewOutput = htmlspecialchars($newName, ENT_QUOTES, 'UTF-8');
+    echo "Table $safeOldOutput renamed to $safeNewOutput successfully";
 } catch (PDOException $e) {
     http_response_code(500);
     echo "Error updating table: " . $e->getMessage();
