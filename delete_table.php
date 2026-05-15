@@ -22,19 +22,15 @@ try {
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     // Table identifiers cannot be bound with PDO parameters in DDL, so we validate and escape first.
-    $sql = "CREATE TABLE IF NOT EXISTS `$safeTableName` (
-        id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-        name VARCHAR(30) NOT NULL,
-        email VARCHAR(50) NOT NULL
-    )";
-
+    $sql = "DROP TABLE IF EXISTS `$safeTableName`";
     $conn->exec($sql);
+
     $safeOutput = htmlspecialchars($tableName, ENT_QUOTES, 'UTF-8');
-    echo "Table $safeOutput created successfully";
+    echo "Table $safeOutput deleted successfully";
 } catch (PDOException $e) {
     http_response_code(500);
-    error_log("Error creating table: " . $e->getMessage());
-    echo "Error creating table.";
+    error_log("Error deleting table: " . $e->getMessage());
+    echo "Error deleting table.";
 }
 
 $conn = null;
