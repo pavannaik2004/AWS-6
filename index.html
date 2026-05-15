@@ -275,10 +275,9 @@
       <header>
         <div class="brand">
           <h1>Power Cloud</h1>
-          <p>
-            AWS RDS + PHP demo to <strong>create tables</strong> and
-            <strong>fetch table names</strong>.
-          </p>
+            <p>
+              AWS RDS + PHP demo for <strong>full CRUD table operations</strong>.
+            </p>
         </div>
         <span class="pill">AWS-6 • RDS / MySQL • PHP</span>
       </header>
@@ -327,17 +326,106 @@
 
             <ul id="tableNamesList" aria-label="Table names"></ul>
           </section>
+
+          <section class="card split" aria-labelledby="update-table-title">
+            <h2 id="update-table-title">Update table (rename)</h2>
+            <p class="muted">
+              Rename a table by entering current and new names.
+            </p>
+
+            <form id="updateTableForm">
+              <label for="currentTableName">Current table name</label>
+              <input
+                type="text"
+                id="currentTableName"
+                placeholder="e.g. users"
+                required
+                autocomplete="off"
+              />
+
+              <label for="newTableName">New table name</label>
+              <div class="row">
+                <input
+                  type="text"
+                  id="newTableName"
+                  placeholder="e.g. app_users"
+                  required
+                  autocomplete="off"
+                />
+                <button id="updateBtn" type="submit">Update</button>
+              </div>
+
+              <div id="updateStatus" class="status" role="status" aria-live="polite">
+                Ready.
+              </div>
+            </form>
+          </section>
+
+          <section class="card split" aria-labelledby="delete-table-title">
+            <h2 id="delete-table-title">Delete table</h2>
+            <p class="muted">
+              Drop a table by name. This action removes table data permanently.
+            </p>
+
+            <form id="deleteTableForm">
+              <label for="deleteTableName">Table name</label>
+              <div class="row">
+                <input
+                  type="text"
+                  id="deleteTableName"
+                  placeholder="e.g. old_table"
+                  required
+                  autocomplete="off"
+                />
+                <button id="deleteBtn" type="submit">Delete</button>
+              </div>
+              <div id="deleteStatus" class="status" role="status" aria-live="polite">
+                Ready.
+              </div>
+            </form>
+          </section>
+
+          <section class="card" aria-labelledby="guide-title">
+            <h2 id="guide-title">CRUD guide</h2>
+            <p class="muted">
+              Use this order for quick verification of all operations:
+            </p>
+            <ul aria-label="CRUD guide steps">
+              <li>
+                Create a table using <strong>Create table</strong>.
+                <span class="tag">C</span>
+              </li>
+              <li>
+                Check tables with <strong>Fetch table names</strong>.
+                <span class="tag">R</span>
+              </li>
+              <li>
+                Rename the table in <strong>Update table (rename)</strong>.
+                <span class="tag">U</span>
+              </li>
+              <li>
+                Remove it with <strong>Delete table</strong>.
+                <span class="tag">D</span>
+              </li>
+            </ul>
+          </section>
         </div>
       </main>
     </div>
 
     <script>
       const createTableForm = document.getElementById("createTableForm");
+      const updateTableForm = document.getElementById("updateTableForm");
+      const deleteTableForm = document.getElementById("deleteTableForm");
       const fetchTableNamesBtn = document.getElementById("fetchTableNamesBtn");
       const tableNamesList = document.getElementById("tableNamesList");
       const createStatus = document.getElementById("createStatus");
+      const updateStatus = document.getElementById("updateStatus");
+      const deleteStatus = document.getElementById("deleteStatus");
       const fetchStatus = document.getElementById("fetchStatus");
       const createBtn = document.getElementById("createBtn");
+      const updateBtn = document.getElementById("updateBtn");
+      const deleteBtn = document.getElementById("deleteBtn");
 
       function setStatus(el, text, type) {
         el.textContent = text;
@@ -416,6 +504,75 @@
           setStatus(fetchStatus, "Failed to fetch table names.", "err");
         } finally {
           fetchTableNamesBtn.disabled = false;
+        }
+      });
+
+      // Update table (rename)
+      updateTableForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const currentName = document
+          .getElementById("currentTableName")
+          .value.trim();
+        const newName = document.getElementById("newTableName").value.trim();
+
+        if (!safeTableName(currentName) || !safeTableName(newName)) {
+          setStatus(
+            updateStatus,
+            "Invalid table names. Use letters, numbers, underscores (no spaces).",
+            "err"
+          );
+          return;
+        }
+
+        updateBtn.disabled = true;
+        setStatus(updateStatus, "Updating table…");
+
+        try {
+          const res = await fetch(
+            `update_table.php?old_name=${encodeURIComponent(
+              currentName
+            )}&new_name=${encodeURIComponent(newName)}`
+          );
+          const message = await res.text();
+          setStatus(updateStatus, message || "Done.", res.ok ? "ok" : "err");
+        } catch (error) {
+          console.error("Error updating table:", error);
+          setStatus(updateStatus, "Network error while updating table.", "err");
+        } finally {
+          updateBtn.disabled = false;
+        }
+      });
+
+      // Delete table
+      deleteTableForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const tableName = document.getElementById("deleteTableName").value.trim();
+
+        if (!safeTableName(tableName)) {
+          setStatus(
+            deleteStatus,
+            "Invalid table name. Use letters, numbers, underscores (no spaces).",
+            "err"
+          );
+          return;
+        }
+
+        deleteBtn.disabled = true;
+        setStatus(deleteStatus, "Deleting table…");
+
+        try {
+          const res = await fetch(
+            `delete_table.php?name=${encodeURIComponent(tableName)}`
+          );
+          const message = await res.text();
+          setStatus(deleteStatus, message || "Done.", res.ok ? "ok" : "err");
+        } catch (error) {
+          console.error("Error deleting table:", error);
+          setStatus(deleteStatus, "Network error while deleting table.", "err");
+        } finally {
+          deleteBtn.disabled = false;
         }
       });
     </script>
