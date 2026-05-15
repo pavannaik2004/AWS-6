@@ -4,7 +4,13 @@ $username = "admin";
 $password = "adminadmin";
 $dbname = "mydbb";
 
-$tableName = $_GET['name'] ?? '';
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    echo "Method not allowed. Use POST.";
+    exit;
+}
+
+$tableName = $_POST['name'] ?? '';
 
 if (!preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/', $tableName)) {
     http_response_code(400);

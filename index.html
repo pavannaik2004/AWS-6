@@ -529,11 +529,14 @@
         setStatus(updateStatus, "Updating table…");
 
         try {
-          const res = await fetch(
-            `update_table.php?old_name=${encodeURIComponent(
-              currentName
-            )}&new_name=${encodeURIComponent(newName)}`
-          );
+          const res = await fetch("update_table.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({
+              old_name: currentName,
+              new_name: newName,
+            }),
+          });
           const message = await res.text();
           setStatus(updateStatus, message || "Done.", res.ok ? "ok" : "err");
         } catch (error) {
@@ -563,9 +566,13 @@
         setStatus(deleteStatus, "Deleting table…");
 
         try {
-          const res = await fetch(
-            `delete_table.php?name=${encodeURIComponent(tableName)}`
-          );
+          const res = await fetch("delete_table.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({
+              name: tableName,
+            }),
+          });
           const message = await res.text();
           setStatus(deleteStatus, message || "Done.", res.ok ? "ok" : "err");
         } catch (error) {
