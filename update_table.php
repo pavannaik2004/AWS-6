@@ -1,8 +1,5 @@
 <?php
-$servername = "database-1.c5yimwcqgy8n.eu-north-1.rds.amazonaws.com";
-$username = "admin";
-$password = "adminadmin";
-$dbname = "mydbb";
+require_once __DIR__ . '/db_config.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);

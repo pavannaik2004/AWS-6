@@ -1,8 +1,5 @@
 <?php
-$servername = "database-1.c5yimwcqgy8n.eu-north-1.rds.amazonaws.com";
-$username = "admin";
-$password = "adminadmin";
-$dbname = "mydbb";
+require_once __DIR__ . '/db_config.php';
 
 try {
     $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
