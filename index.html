@@ -458,9 +458,13 @@
         setStatus(createStatus, "Creating table…");
 
         try {
-          const res = await fetch(
-            `create_table.php?name=${encodeURIComponent(tableName)}`
-          );
+          const res = await fetch("create_table.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({
+              name: tableName,
+            }),
+          });
           const message = await res.text();
           setStatus(createStatus, message || "Done.", res.ok ? "ok" : "err");
         } catch (error) {
