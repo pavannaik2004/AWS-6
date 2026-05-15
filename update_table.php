@@ -23,6 +23,7 @@ try {
     $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+    // Table identifiers cannot be bound with PDO parameters in DDL, so we validate and escape first.
     $sql = "RENAME TABLE `$safeOldName` TO `$safeNewName`";
     $conn->exec($sql);
 
