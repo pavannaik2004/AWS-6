@@ -562,6 +562,11 @@
           return;
         }
 
+        if (!window.confirm(`Are you sure you want to delete table "${tableName}"?`)) {
+          setStatus(deleteStatus, "Delete cancelled.");
+          return;
+        }
+
         deleteBtn.disabled = true;
         setStatus(deleteStatus, "Deleting table…");
 
