@@ -32,7 +32,8 @@ try {
     echo "Table $safeOldOutput renamed to $safeNewOutput successfully";
 } catch (PDOException $e) {
     http_response_code(500);
-    echo "Error updating table: " . $e->getMessage();
+    error_log("Error updating table: " . $e->getMessage());
+    echo "Error updating table.";
 }
 
 $conn = null;

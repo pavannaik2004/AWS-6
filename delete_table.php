@@ -29,7 +29,8 @@ try {
     echo "Table $safeOutput deleted successfully";
 } catch (PDOException $e) {
     http_response_code(500);
-    echo "Error deleting table: " . $e->getMessage();
+    error_log("Error deleting table: " . $e->getMessage());
+    echo "Error deleting table.";
 }
 
 $conn = null;
