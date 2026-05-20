@@ -1,12 +1,5 @@
 some important command
 
-Set database environment variables before running the PHP files:
-```
-export DB_HOST="your-rds-endpoint"
-export DB_USER="your-username"
-export DB_PASS="your-password"
-export DB_NAME="mydbb"
-```
 
 Install Apache: 
 ```
